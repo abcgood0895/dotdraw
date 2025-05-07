@@ -1,4 +1,7 @@
-export default async function handler(req, res) {
+
+const fetch = require('node-fetch');
+
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -19,19 +22,23 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0",
-                input: { prompt }
+                input: { prompt: prompt }
             })
         });
 
-        const result = await response.json();
+        const resultText = await response.text();
 
-        if (result.detail) {
-            return res.status(400).json({ error: result.detail });
+        try {
+            const result = JSON.parse(resultText);
+            if (result.detail) {
+                return res.status(400).json({ error: result.detail });
+            }
+            const imageUrl = result.output?.[0] || "生成失敗";
+            res.status(200).json({ image: imageUrl });
+        } catch (err) {
+            return res.status(500).json({ error: "請求失敗：" + resultText });
         }
-
-        const imageUrl = result.output?.[0] || "生成失敗";
-        res.status(200).json({ image: imageUrl });
     } catch (error) {
         res.status(500).json({ error: "API 啟動失敗：" + error.message });
     }
-}
+};
