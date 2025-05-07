@@ -18,7 +18,7 @@ export default async function handler(req, res) {
                 'Authorization': `Token ${apiKey}`
             },
             body: JSON.stringify({
-                version: "db21e45e105e8c4d6b9e1cd1486b94f0d98968b8d8d13265b8b6c95c162675df",
+                version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0",
                 input: { prompt: prompt }
             })
         });
