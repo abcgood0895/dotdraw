@@ -18,20 +18,20 @@ export default async function handler(req, res) {
                 'Authorization': Token ${apiKey}
             },
             body: JSON.stringify({
-                version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0", // Stable Diffusion v1.5
+                version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0",
                 input: { prompt }
             })
         });
 
         const result = await response.json();
 
-        if (!result.output || !Array.isArray(result.output)) {
-            return res.status(500).json({ error: '圖片生成失敗或格式錯誤' });
+        if (result.detail) {
+            return res.status(400).json({ error: result.detail });
         }
 
-        const imageUrl = result.output[0];
+        const imageUrl = result.output?.[0] || "生成失敗";
         res.status(200).json({ image: imageUrl });
     } catch (error) {
-        res.status(500).json({ error: "API 錯誤：" + error.message });
+        res.status(500).json({ error: "API 啟動失敗：" + error.message });
     }
 }
