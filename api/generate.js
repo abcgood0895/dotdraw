@@ -1,41 +1,37 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const prompt = req.body.prompt;
-  const apiKey = process.env.REPLICATE_API_TOKEN;
-
-  if (!apiKey) {
-    return res.status(500).json({ error: 'Missing Replicate API token.' });
-  }
-
-  try {
-    const response = await fetch('https://api.replicate.com/v1/predictions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${apiKey}`
-      },
-      body: JSON.stringify({
-        version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0",
-        input: { prompt }
-      })
-    });
-
-    const text = await response.text();
-    try {
-      const result = JSON.parse(text);
-      if (result.detail) {
-        return res.status(400).json({ error: result.detail });
-      }
-      const imageUrl = result.output?.[0] || "生成失敗";
-      return res.status(200).json({ image: imageUrl });
-    } catch (e) {
-      return res.status(500).json({ error: "伺服器回傳格式錯誤：" + text });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
-  } catch (error) {
-    return res.status(500).json({ error: "API 啟動失敗：" + error.message });
-  }
+    const prompt = req.body.prompt;
+    const apiKey = process.env.REPLICATE_API_TOKEN;
+
+    if (!apiKey) {
+        return res.status(500).json({ error: 'Missing Replicate API token.' });
+    }
+
+    try {
+        const response = await fetch('https://api.replicate.com/v1/predictions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${apiKey}`
+            },
+            body: JSON.stringify({
+                version: "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff768e07d96c4030bf288cc0a",
+                input: { prompt }
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.detail) {
+            return res.status(400).json({ error: result.detail });
+        }
+
+        const imageUrl = result.output?.[0] || "生成失敗";
+        return res.status(200).json({ image: imageUrl });
+    } catch (error) {
+        res.status(500).json({ error: "API 啟動失敗：" + error.message });
+    }
 }
