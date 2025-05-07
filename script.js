@@ -15,7 +15,7 @@ async function generateImage() {
         const response = await fetch("/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: prompt })
+            body: JSON.stringify({ prompt })
         });
 
         const data = await response.json();
@@ -27,7 +27,7 @@ async function generateImage() {
 
         status.textContent = "圖片生成完成！";
         preview.innerHTML = `<img src="${data.image}" alt="生成圖片">`;
-    } catch (error) {
-        status.textContent = "錯誤：API 請求失敗";
+    } catch (err) {
+        status.textContent = "請求失敗：" + err.message;
     }
 }
