@@ -15,43 +15,27 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': Token ${apiKey}
+                'Authorization': `Token ${apiKey}`
             },
             body: JSON.stringify({
                 version: "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",
-                input: {
-                    prompt: prompt,
-                    scheduler: "K_EULER"
-                }
+                input: { prompt: prompt }
             })
         });
 
-        const result = await response.json();
+        const text = await response.text();
 
-        if (result.detail) {
-            return res.status(400).json({ error: result.detail });
-        }
-
-        const getOutput = async (url) => {
-            let statusResult;
-            while (true) {
-                const res = await fetch(url, {
-                    headers: {
-                        'Authorization': Token ${apiKey}
-                    }
-                });
-                statusResult = await res.json();
-                if (statusResult.status === 'succeeded') break;
-                if (statusResult.status === 'failed') throw new Error('生成失敗');
-                await new Promise(r => setTimeout(r, 1000));
+        try {
+            const result = JSON.parse(text);
+            if (result.detail) {
+                return res.status(400).json({ error: result.detail });
             }
-            return statusResult.output?.[0];
-        };
-
-        const imageUrl = await getOutput(result.urls.get);
-        res.status(200).json({ image: imageUrl });
-
+            const imageUrl = result.output?.[0] || "生成失敗";
+            return res.status(200).json({ image: imageUrl });
+        } catch (err) {
+            return res.status(500).json({ error: "API 回傳非 JSON 格式：" + text });
+        }
     } catch (error) {
-        res.status(500).json({ error: "API 啟動失敗：" + error.message });
+        return res.status(500).json({ error: "API 請求失敗：" + error.message });
     }
 }
