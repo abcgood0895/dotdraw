@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>DotDraw - AI圖片生成</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>DotDraw</h1>
+        <p>輸入你想像的畫面，我們幫你變成圖片</p>
+    </header>
+
+    <main>
+        <input type="text" id="promptInput" placeholder="輸入提示詞（例如：一隻戴帽子的貓）">
+        <button onclick="generateImage()">生成圖片</button>
+        <p id="status"></p>
+        <div id="imagePreview"></div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
