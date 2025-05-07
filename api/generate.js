@@ -1,39 +1,41 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-    const prompt = req.body.prompt;
-    const apiKey = process.env.REPLICATE_API_TOKEN;
+  const prompt = req.body.prompt;
+  const apiKey = process.env.REPLICATE_API_TOKEN;
 
-    if (!apiKey) {
-        return res.status(500).json({ error: 'Missing Replicate API token.' });
-    }
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Missing Replicate API token.' });
+  }
 
+  try {
+    const response = await fetch('https://api.replicate.com/v1/predictions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${apiKey}`
+      },
+      body: JSON.stringify({
+        version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0",
+        input: { prompt }
+      })
+    });
+
+    const text = await response.text();
     try {
-        const replicateResponse = await fetch('https://api.replicate.com/v1/predictions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': Token ${apiKey}
-            },
-            body: JSON.stringify({
-                version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0",
-                input: { prompt }
-            })
-        });
-
-        const result = await replicateResponse.json().catch(async () => {
-            const text = await replicateResponse.text();
-            throw new Error("非 JSON 錯誤回應：" + text);
-        });
-
-        if (replicateResponse.status !== 201) {
-            return res.status(500).json({ error: result.detail || '圖片生成失敗' });
-        }
-
-        res.status(200).json({ image: result.output[0] });
-    } catch (err) {
-        res.status(500).json({ error: "API 錯誤：" + err.message });
+      const result = JSON.parse(text);
+      if (result.detail) {
+        return res.status(400).json({ error: result.detail });
+      }
+      const imageUrl = result.output?.[0] || "生成失敗";
+      return res.status(200).json({ image: imageUrl });
+    } catch (e) {
+      return res.status(500).json({ error: "伺服器回傳格式錯誤：" + text });
     }
+
+  } catch (error) {
+    return res.status(500).json({ error: "API 啟動失敗：" + error.message });
+  }
 }
