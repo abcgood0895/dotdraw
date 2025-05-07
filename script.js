@@ -1,29 +1,37 @@
-async function generateImage() {
-    const prompt = document.getElementById('promptInput').value;
-    const status = document.getElementById('status');
-    const preview = document.getElementById('imagePreview');
-
-    if (!prompt) {
-        alert("請先輸入提示詞！");
-        return;
+export default async function handler(req, res) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    status.textContent = "圖片生成中，請稍候...";
-    preview.innerHTML = "";
+    const prompt = req.body.prompt;
+    const apiKey = process.env.REPLICATE_API_TOKEN;
 
-    const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: prompt })
-    });
-
-    const data = await response.json();
-
-    if (data.error) {
-        status.textContent = "錯誤：" + data.error;
-        return;
+    if (!apiKey) {
+        return res.status(500).json({ error: 'Missing Replicate API token.' });
     }
 
-    status.textContent = "圖片生成完成！";
-    preview.innerHTML = `<img src="${data.image}" alt="生成圖片">`;
+    try {
+        const response = await fetch('https://api.replicate.com/v1/predictions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': Token ${apiKey}
+            },
+            body: JSON.stringify({
+                version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0", // Stable Diffusion 1.5
+                input: { prompt: prompt }
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.detail) {
+            return res.status(400).json({ error: result.detail });
+        }
+
+        const imageUrl = result.output?.[0] || "生成失敗";
+        res.status(200).json({ image: imageUrl });
+    } catch (error) {
+        res.status(500).json({ error: "API 啟動失敗：" + error.message });
+    }
 }
