@@ -18,7 +18,7 @@ export default async function handler(req, res) {
                 'Authorization': `Token ${apiKey}`
             },
             body: JSON.stringify({
-                version: "2b017d9b67edd2ee1401238df49d75da53c523f36e363881e057f5dc3ed3c5b2",
+                version: "db21e45e105e8c4d6b9e1cd1486b94f0d98968b8d8d13265b8b6c95c162675df",
                 input: { prompt: prompt }
             })
         });
@@ -30,13 +30,14 @@ export default async function handler(req, res) {
             if (result.error || result.detail) {
                 return res.status(400).json({ error: result.error || result.detail });
             }
+
             const imageUrl = result.output?.[0] || "生成失敗";
             return res.status(200).json({ image: imageUrl });
-        } catch (e) {
-            return res.status(500).json({ error: "伺服器回傳格式錯誤：" + text });
-        }
 
+        } catch (e) {
+            return res.status(500).json({ error: "API 回傳格式錯誤：" + text });
+        }
     } catch (error) {
-        res.status(500).json({ error: "API 請求失敗：" + error.message });
+        return res.status(500).json({ error: "API 請求失敗：" + error.message });
     }
 }
