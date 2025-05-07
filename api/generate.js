@@ -1,7 +1,4 @@
-
-const fetch = require('node-fetch');
-
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -14,31 +11,29 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const response = await fetch('https://api.replicate.com/v1/predictions', {
+        const replicateResponse = await fetch('https://api.replicate.com/v1/predictions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Token ${apiKey}`
+                'Authorization': Token ${apiKey}
             },
             body: JSON.stringify({
                 version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0",
-                input: { prompt: prompt }
+                input: { prompt }
             })
         });
 
-        const resultText = await response.text();
+        const result = await replicateResponse.json().catch(async () => {
+            const text = await replicateResponse.text();
+            throw new Error("非 JSON 錯誤回應：" + text);
+        });
 
-        try {
-            const result = JSON.parse(resultText);
-            if (result.detail) {
-                return res.status(400).json({ error: result.detail });
-            }
-            const imageUrl = result.output?.[0] || "生成失敗";
-            res.status(200).json({ image: imageUrl });
-        } catch (err) {
-            return res.status(500).json({ error: "請求失敗：" + resultText });
+        if (replicateResponse.status !== 201) {
+            return res.status(500).json({ error: result.detail || '圖片生成失敗' });
         }
-    } catch (error) {
-        res.status(500).json({ error: "API 啟動失敗：" + error.message });
+
+        res.status(200).json({ image: result.output[0] });
+    } catch (err) {
+        res.status(500).json({ error: "API 錯誤：" + err.message });
     }
-};
+}
