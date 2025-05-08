@@ -1,3 +1,4 @@
+
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
@@ -18,24 +19,20 @@ export default async function handler(req, res) {
                 "Authorization": `Token ${apiKey}`
             },
             body: JSON.stringify({
-                version: "fofr/material-diffusion",
+                version: "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",
                 input: { prompt }
             })
         });
 
-        const resultText = await response.text();
+        const result = await response.json();
 
-        try {
-            const result = JSON.parse(resultText);
-            if (result.detail) {
-                return res.status(400).json({ error: result.detail });
-            }
-            const imageUrl = result.output?.[0] || "生成失敗";
-            return res.status(200).json({ image: imageUrl });
-        } catch (e) {
-            return res.status(500).json({ error: "伺服器回傳格式錯誤：" + resultText });
+        if (result.detail) {
+            return res.status(400).json({ error: result.detail });
         }
+
+        const imageUrl = result.output?.[0] || "生成失敗";
+        return res.status(200).json({ image: imageUrl });
     } catch (error) {
-        return res.status(500).json({ error: "API 請求錯誤：" + error.message });
+        return res.status(500).json({ error: "API 錯誤：" + error.message });
     }
 }
