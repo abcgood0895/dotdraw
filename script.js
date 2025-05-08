@@ -1,36 +1,37 @@
-async function generate() {
-  const prompt = document.getElementById("prompt").value;
-  const resultDiv = document.getElementById("result");
-  document.getElementById("status").innerText = "生成中...";
-  resultDiv.innerHTML = "";
+const generateButton = document.getElementById("generateBtn");
+const clearButton = document.getElementById("clearBtn");
+const regenerateButton = document.getElementById("regenerateBtn");
+const result = document.getElementById("result");
 
-  const res = await fetch("/api/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt })
-  });
+generateButton.addEventListener("click", async () => {
+    const prompt = document.getElementById("prompt").value;
+    result.innerHTML = "生成中...";
+    const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+    });
 
-  const data = await res.json();
-  if (data.image) {
-    const img = document.createElement("img");
-    img.src = data.image;
-    img.alt = "生成的圖片";
-    img.style.maxWidth = "100%";
-    img.onerror = () => {
-      resultDiv.innerHTML = "圖片載入失敗，請稍候重試或檢查網址：" + data.image;
-    };
-    resultDiv.appendChild(img);
-    document.getElementById("status").innerText = "圖片生成完成！";
-  } else {
-    document.getElementById("status").innerText = "錯誤：" + data.error;
-  }
-}
+    const data = await response.json();
+    if (data.image) {
+        if (data.image.startsWith("data:image") || data.image.startsWith("http")) {
+            const img = document.createElement("img");
+            img.src = data.image;
+            result.innerHTML = "圖片生成完成！";
+            result.appendChild(img);
+        } else {
+            result.innerHTML = "圖片載入失敗，請稍候重試或檢查網址：" + data.image;
+        }
+    } else {
+        result.innerHTML = "錯誤：" + data.error;
+    }
+});
 
-function clearImage() {
-  document.getElementById("result").innerHTML = "";
-  document.getElementById("status").innerText = "";
-}
+clearButton.addEventListener("click", () => {
+    document.getElementById("prompt").value = "";
+    result.innerHTML = "";
+});
 
-function retry() {
-  generate();
-}
+regenerateButton.addEventListener("click", () => {
+    generateButton.click();
+});
