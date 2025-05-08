@@ -5,33 +5,31 @@ export default async function handler(req, res) {
   }
 
   const prompt = req.body.prompt;
-  const apiToken = process.env.HUGGINGFACE_API_TOKEN;
+  const apiKey = process.env.HUGGINGFACE_API_TOKEN;
 
-  if (!apiToken) {
+  if (!apiKey) {
     return res.status(500).json({ error: 'Missing Hugging Face API token.' });
   }
 
   try {
-    const response = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1", {
-      method: "POST",
+    const response = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2', {
+      method: 'POST',
       headers: {
-        "Authorization": `Bearer ${apiToken}`,
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({ inputs: prompt })
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return res.status(500).json({ error: "API response error: " + errorText });
+    const result = await response.json();
+
+    if (result.error) {
+      return res.status(400).json({ error: "API response error: " + result.error });
     }
 
-    const arrayBuffer = await response.arrayBuffer();
-    const base64Image = Buffer.from(arrayBuffer).toString("base64");
-    const imageUrl = `data:image/png;base64,${base64Image}`;
-
-    res.status(200).json({ image: imageUrl });
-  } catch (err) {
-    res.status(500).json({ error: "API 呼叫失敗：" + err.message });
+    const imageUrl = result[0]?.url || "生成失敗";
+    return res.status(200).json({ image: imageUrl });
+  } catch (error) {
+    return res.status(500).json({ error: "API 呼叫失敗：" + error.message });
   }
 }

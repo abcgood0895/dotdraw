@@ -1,19 +1,19 @@
+
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>DotDraw</title>
 </head>
 <body>
   <h1>DotDraw</h1>
   <p>輸入你想像的畫面，我們幫你變成圖片</p>
-  <input type="text" id="promptInput" placeholder="輸入提示詞...">
+  <input type="text" id="prompt" placeholder="描述畫面 (請用英文)">
   <button onclick="generateImage()">生成圖片</button>
   <button onclick="clearImage()">清除</button>
   <button onclick="regenerateImage()">重新產生</button>
-  <div id="status"></div>
-  <div id="imagePreview"></div>
+  <p id="status"></p>
+  <img id="resultImage" src="" alt="生成圖片" style="max-width: 100%;">
   <script src="script.js"></script>
 </body>
 </html>
