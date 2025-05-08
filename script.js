@@ -1,16 +1,13 @@
-let lastPrompt = "";
-
 async function generateImage() {
     const prompt = document.getElementById("promptInput").value;
     const status = document.getElementById("status");
     const preview = document.getElementById("imagePreview");
 
     if (!prompt) {
-        alert("請先輸入提示詞！");
+        status.textContent = "請先輸入提示詞！";
         return;
     }
 
-    lastPrompt = prompt;
     status.textContent = "圖片生成中，請稍候...";
     preview.innerHTML = "";
 
@@ -25,24 +22,21 @@ async function generateImage() {
 
         if (data.error) {
             status.textContent = "錯誤：" + data.error;
-            return;
+        } else {
+            status.textContent = "圖片生成完成！";
+            preview.innerHTML = `<img src="${data.image}" alt="生成圖片">`;
         }
-
-        status.textContent = "圖片生成完成！";
-        preview.innerHTML = `<img src="${data.image}" alt="生成圖片">`;
-    } catch (err) {
-        status.textContent = "請求失敗：" + err.message;
+    } catch (error) {
+        status.textContent = "請求失敗：" + error.message;
     }
 }
 
-function clearImage() {
-    document.getElementById("imagePreview").innerHTML = "";
+function clearPrompt() {
+    document.getElementById("promptInput").value = "";
     document.getElementById("status").textContent = "";
+    document.getElementById("imagePreview").innerHTML = "";
 }
 
 function regenerateImage() {
-    if (lastPrompt) {
-        document.getElementById("promptInput").value = lastPrompt;
-        generateImage();
-    }
+    generateImage();
 }
