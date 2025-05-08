@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         'Authorization': `Token ${apiKey}`
       },
       body: JSON.stringify({
-        version: "tstramer/material-diffusion",
+        version: "version: "tstramer/material-diffusion:a42692c5",
         input: { prompt }
       })
     });
