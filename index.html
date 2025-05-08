@@ -1,1 +1,18 @@
-<!DOCTYPE html><html><head><title>DotDraw</title></head><body>Hello DotDraw!</body></html>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>DotDraw</title>
+</head>
+<body>
+    <h1>DotDraw</h1>
+    <p>輸入你想像的畫面，我們幫你變成圖片</p>
+    <input type="text" id="prompt" placeholder="例如：一隻在月亮上的貓咪" />
+    <button onclick="generate()">生成圖片</button>
+    <button onclick="clearImage()">清除</button>
+    <button onclick="generate()">重新產生</button>
+    <p id="status"></p>
+    <img id="output" src="" alt="生成圖片" style="max-width: 300px; display:none;" />
+    <script src="script.js"></script>
+</body>
+</html>
