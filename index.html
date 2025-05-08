@@ -1,23 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>DotDraw</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #fff; color: #000; }
-        input, button { padding: 10px; margin: 5px; }
-        #imagePreview img { max-width: 100%; margin-top: 20px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DotDraw</title>
 </head>
 <body>
-    <h1>DotDraw</h1>
-    <p>輸入你想像的畫面，我們幫你變成圖片</p>
-    <input type="text" id="promptInput" placeholder="例如：貓">
-    <button onclick="generateImage()">生成圖片</button>
-    <button onclick="clearImage()">清除</button>
-    <button onclick="regenerateImage()">重新產生</button>
-    <div id="status"></div>
-    <div id="imagePreview"></div>
-    <script src="script.js"></script>
+  <h1>DotDraw</h1>
+  <p>輸入你想像的畫面，我們幫你變成圖片</p>
+  <input type="text" id="promptInput" placeholder="輸入提示詞...">
+  <button onclick="generateImage()">生成圖片</button>
+  <button onclick="clearImage()">清除</button>
+  <button onclick="regenerateImage()">重新產生</button>
+  <div id="status"></div>
+  <div id="imagePreview"></div>
+  <script src="script.js"></script>
 </body>
 </html>
