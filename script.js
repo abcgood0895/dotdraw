@@ -13,6 +13,7 @@ async function generate() {
         });
 
         const data = await response.json();
+        console.log("回傳圖片：", data.image);
         if (data.image) {
             document.getElementById('output').src = data.image;
             document.getElementById('output').style.display = 'block';
