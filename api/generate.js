@@ -1,41 +1,31 @@
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const prompt = req.body.prompt;
-  const apiKey = process.env.REPLICATE_API_TOKEN;
+  const HF_API_TOKEN = process.env.HUGGINGFACE_API_TOKEN;
 
-  if (!apiKey) {
-    return res.status(500).json({ error: 'Missing Replicate API token.' });
+  if (!HF_API_TOKEN) {
+    return res.status(500).json({ error: 'Missing Hugging Face API token.' });
   }
 
   try {
-    const response = await fetch('https://api.replicate.com/v1/predictions', {
-      method: 'POST',
+    const response = await fetch("https://api-inference.huggingface.co/models/prompthero/openjourney", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${apiKey}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${HF_API_TOKEN}`,
       },
-      body: JSON.stringify({
-        version: "version: "tstramer/material-diffusion:a42692c5",
-        input: { prompt }
-      })
+      body: JSON.stringify({ inputs: prompt }),
     });
 
-    const text = await response.text();
+    const buffer = await response.arrayBuffer();
+    const base64Image = Buffer.from(buffer).toString("base64");
+    const imageUrl = `data:image/png;base64,${base64Image}`;
 
-    try {
-      const result = JSON.parse(text);
-      if (result.detail) {
-        return res.status(400).json({ error: result.detail });
-      }
-
-      const imageUrl = result.output?.[0] || "生成失敗";
-      return res.status(200).json({ image: imageUrl });
-    } catch (e) {
-      return res.status(500).json({ error: "伺服器回傳格式錯誤：" + text });
-    }
+    res.status(200).json({ image: imageUrl });
   } catch (error) {
     res.status(500).json({ error: "API 呼叫失敗：" + error.message });
   }
