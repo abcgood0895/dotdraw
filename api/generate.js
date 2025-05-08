@@ -20,15 +20,15 @@ export default async function handler(req, res) {
       body: JSON.stringify({ inputs: prompt })
     });
 
-    const contentType = response.headers.get("content-type") || "image/png";
+    const contentType = response.headers.get("content-type");
 
-    if (contentType.includes("application/json")) {
+    if (contentType && contentType.includes("application/json")) {
       const result = await response.json();
       return res.status(500).json({ error: "API 回應錯誤：" + JSON.stringify(result) });
     } else {
       const buffer = await response.arrayBuffer();
       const base64 = Buffer.from(buffer).toString("base64");
-      const imageUrl = `data:${contentType};base64,${base64}`;
+      const imageUrl = `data:image/png;base64,${base64}`;
       return res.status(200).json({ image: imageUrl });
     }
   } catch (error) {
