@@ -11,10 +11,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://api-inference.huggingface.co/models/prompthero/openjourney", {
+    const response = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ inputs: prompt })
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
     if (contentType && contentType.includes("application/json")) {
       const result = await response.json();
-      return res.status(500).json({ error: "API response error: " + JSON.stringify(result) });
+      return res.status(500).json({ error: "API 回應錯誤：" + JSON.stringify(result) });
     } else {
       const buffer = await response.arrayBuffer();
       const base64 = Buffer.from(buffer).toString("base64");
