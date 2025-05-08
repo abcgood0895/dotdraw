@@ -18,8 +18,8 @@ export default async function handler(req, res) {
                 'Authorization': `Token ${apiKey}`
             },
             body: JSON.stringify({
-                version: "a9758cb5caa5e57692d5951c8fb96b364a765f9d75038c73c58aa0f10c6c78b0",
-                input: { prompt: prompt }
+                version: "8f0c49f7d133ff1c179d5eab1d0035f4d4abf7d16b54f2db2f1cb7039f3c6f06",
+                input: { prompt }
             })
         });
 
@@ -37,6 +37,7 @@ export default async function handler(req, res) {
         } catch (e) {
             return res.status(500).json({ error: "API 回傳格式錯誤：" + text });
         }
+
     } catch (error) {
         return res.status(500).json({ error: "API 請求失敗：" + error.message });
     }

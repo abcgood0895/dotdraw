@@ -7,8 +7,7 @@
     <style>
         body { font-family: "Helvetica", sans-serif; background-color: #f7f7f7; text-align: center; padding: 20px; }
         header { background-color: #222; color: white; padding: 10px 0; margin-bottom: 30px; }
-        input { padding: 10px; font-size: 16px; width: 250px; margin-right: 10px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        input, button { padding: 10px; font-size: 16px; margin: 5px; }
         #status { margin-top: 20px; font-size: 14px; color: #444; }
         #imagePreview img { max-width: 90%; margin-top: 20px; border: 1px solid #ccc; }
     </style>
@@ -18,8 +17,10 @@
         <h1>DotDraw</h1>
         <p>輸入你想像的畫面，我們幫你變成圖片</p>
     </header>
-    <input type="text" id="promptInput" placeholder="可愛的機器貓">
+    <input type="text" id="promptInput" placeholder="輸入提示詞...">
     <button onclick="generateImage()">生成圖片</button>
+    <button onclick="clearResult()">清除</button>
+    <button onclick="regenerateImage()">重新產生</button>
     <div id="status"></div>
     <div id="imagePreview"></div>
     <script src="script.js"></script>
