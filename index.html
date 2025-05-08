@@ -12,11 +12,8 @@
     <button onclick="clearImage()">清除</button>
     <button onclick="generate()">重新產生</button>
     <p id="status"></p>
-
-    <!-- 加上 onerror 防止破圖無提示 -->
     <img id="output" src="" alt="生成圖片" style="max-width: 300px; display:none;" 
          onerror="this.style.display='none'; document.getElementById('status').innerText='圖片載入失敗，請重試或檢查網址';" />
-
     <script src="script.js"></script>
 </body>
 </html>
