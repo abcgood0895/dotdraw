@@ -1,8 +1,7 @@
 let lastPrompt = "";
 
 async function generateImage() {
-    const promptInput = document.getElementById("promptInput");
-    const prompt = promptInput.value;
+    const prompt = document.getElementById("promptInput").value;
     const status = document.getElementById("status");
     const preview = document.getElementById("imagePreview");
 
@@ -29,25 +28,21 @@ async function generateImage() {
             return;
         }
 
-        status.textContent = "圖片生成完成，點圖可下載";
-        preview.innerHTML = `<a href="${data.image}" download><img src="${data.image}" alt="生成圖片"></a>`;
+        status.textContent = "圖片生成完成！";
+        preview.innerHTML = `<img src="${data.image}" alt="生成圖片">`;
     } catch (err) {
         status.textContent = "請求失敗：" + err.message;
     }
 }
 
-function clearResult() {
-    document.getElementById("promptInput").value = "";
-    document.getElementById("status").textContent = "";
+function clearImage() {
     document.getElementById("imagePreview").innerHTML = "";
-    lastPrompt = "";
+    document.getElementById("status").textContent = "";
 }
 
 function regenerateImage() {
     if (lastPrompt) {
         document.getElementById("promptInput").value = lastPrompt;
         generateImage();
-    } else {
-        alert("請先生成一張圖片！");
     }
 }

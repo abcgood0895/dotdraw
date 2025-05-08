@@ -1,24 +1,24 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+    if (req.method !== "POST") {
+        return res.status(405).json({ error: "Method not allowed" });
     }
 
     const prompt = req.body.prompt;
     const apiKey = process.env.REPLICATE_API_TOKEN;
 
     if (!apiKey) {
-        return res.status(500).json({ error: 'Missing Replicate API token.' });
+        return res.status(500).json({ error: "Missing Replicate API token." });
     }
 
     try {
-        const response = await fetch('https://api.replicate.com/v1/predictions', {
-            method: 'POST',
+        const response = await fetch("https://api.replicate.com/v1/predictions", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${apiKey}`
+                "Content-Type": "application/json",
+                "Authorization": `Token ${apiKey}`
             },
             body: JSON.stringify({
-                version: "8f0c49f7d133ff1c179d5eab1d0035f4d4abf7d16b54f2db2f1cb7039f3c6f06",
+                version: "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",
                 input: { prompt }
             })
         });
@@ -27,18 +27,15 @@ export default async function handler(req, res) {
 
         try {
             const result = JSON.parse(text);
-            if (result.error || result.detail) {
-                return res.status(400).json({ error: result.error || result.detail });
+            if (result.detail) {
+                return res.status(400).json({ error: result.detail });
             }
-
             const imageUrl = result.output?.[0] || "生成失敗";
             return res.status(200).json({ image: imageUrl });
-
         } catch (e) {
-            return res.status(500).json({ error: "API 回傳格式錯誤：" + text });
+            return res.status(500).json({ error: "伺服器回傳格式錯誤：" + text });
         }
-
     } catch (error) {
-        return res.status(500).json({ error: "API 請求失敗：" + error.message });
+        res.status(500).json({ error: "API 請求失敗：" + error.message });
     }
 }
